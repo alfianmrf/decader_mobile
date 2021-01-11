@@ -31,7 +31,7 @@ class _RegisterState extends State<Register> {
                 decoration: BoxDecoration(
                   image: DecorationImage(
                     image: AssetImage("images/background.png"),
-                    fit: BoxFit.fitWidth,
+                    fit: BoxFit.fill,
                   ),
               ),
               child: SingleChildScrollView(
