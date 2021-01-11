@@ -14,6 +14,7 @@ class _LoginState extends State<Login> {
   final _formKey = GlobalKey<FormState>();
   var email;
   var password;
+  Color orange = const Color.fromRGBO(244, 144, 31, 1);
   final _scaffoldKey = GlobalKey<ScaffoldState>();
   _showMsg(msg) {
     final snackBar = SnackBar(
@@ -32,139 +33,192 @@ class _LoginState extends State<Login> {
     // Build a Form widget using the _formKey created above.
     return Scaffold(
       key: _scaffoldKey,
-      body: Container(
-        color: Colors.teal,
-        child: Stack(
-          children: <Widget>[
-            Positioned(
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    Card(
-                      elevation: 4.0,
-                      color: Colors.white,
-                      margin: EdgeInsets.only(left: 20, right: 20),
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(15)),
-                      child: Padding(
-                        padding: const EdgeInsets.all(10.0),
-                        child: Form(
-                          key: _formKey,
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: <Widget>[
+      body: SingleChildScrollView(
+        child : Container(
+          height: MediaQuery.of(context).size.height,
+          decoration: BoxDecoration(
+            image: DecorationImage(
+              image: AssetImage("images/background.png"),
+              fit: BoxFit.cover,
+            ),
+          ),
+          child: Stack(
+            children: <Widget>[
+              Positioned(
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      Container(
+                        padding: EdgeInsets.fromLTRB(15.0, 110.0, 0.0, 0.0),
+                        child: Text(
+                          'Decader',
+                          style: TextStyle(
+                              fontSize: 45.0, fontWeight: FontWeight.bold, color: orange
+                          ),
+                        ),
+                      ),
 
-                              TextFormField(
-                                style: TextStyle(color: Color(0xFF000000)),
-                                cursorColor: Color(0xFF9b9b9b),
-                                keyboardType: TextInputType.text,
-                                decoration: InputDecoration(
-                                  prefixIcon: Icon(
-                                    Icons.email,
-                                    color: Colors.grey,
+                      Container(
+                        padding: EdgeInsets.fromLTRB(15.0, 10, 0.0, 0.0),
+                        child: Text(
+                          'Selamat Datang !',
+                          style: TextStyle(
+                              fontSize: 18.0, fontWeight: FontWeight.w600, color: Colors.white
+                          ),
+                        ),
+                      ),
+
+                      Container(
+                          padding: EdgeInsets.only(top: 40.0, left: 20.0, right: 20.0),
+                          child:Form(
+                            key: _formKey,
+                            child: Column(
+                              children: <Widget>[
+                                TextFormField(
+                                  keyboardType: TextInputType.text,
+                                  style: TextStyle(
+                                      color: Colors.white
                                   ),
-                                  hintText: "Email",
-                                  hintStyle: TextStyle(
-                                      color: Color(0xFF9b9b9b),
-                                      fontSize: 15,
-                                      fontWeight: FontWeight.normal),
-                                ),
-                                validator: (emailValue) {
-                                  if (emailValue.isEmpty) {
-                                    return 'Please enter email';
-                                  }
-                                  email = emailValue;
-                                  return null;
-                                },
-                              ),
-                              TextFormField(
-                                style: TextStyle(color: Color(0xFF000000)),
-                                cursorColor: Color(0xFF9b9b9b),
-                                keyboardType: TextInputType.text,
-                                obscureText: true,
-                                decoration: InputDecoration(
-                                  prefixIcon: Icon(
-                                    Icons.vpn_key,
-                                    color: Colors.grey,
-                                  ),
-                                  hintText: "Password",
-                                  hintStyle: TextStyle(
-                                      color: Color(0xFF9b9b9b),
-                                      fontSize: 15,
-                                      fontWeight: FontWeight.normal),
-                                ),
-                                validator: (passwordValue) {
-                                  if (passwordValue.isEmpty) {
-                                    return 'Please enter some text';
-                                  }
-                                  password = passwordValue;
-                                  return null;
-                                },
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.all(10.0),
-                                child: FlatButton(
-                                  child: Padding(
-                                    padding: EdgeInsets.only(
-                                        top: 8, bottom: 8, left: 10, right: 10),
-                                    child: Text(
-                                      _isLoading? 'Proccessing...' : 'Login',
-                                      textDirection: TextDirection.ltr,
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 15.0,
-                                        decoration: TextDecoration.none,
-                                        fontWeight: FontWeight.normal,
-                                      ),
+                                  decoration: InputDecoration(
+                                    labelText: 'Email',
+                                    labelStyle: TextStyle(
+                                        fontSize: 15,
+                                        color: orange,
+                                        fontWeight: FontWeight.w600
+                                    ),
+                                    focusedBorder: UnderlineInputBorder(
+                                        borderSide: BorderSide(color: orange)
                                     ),
                                   ),
-                                  color: Colors.teal,
-                                  disabledColor: Colors.grey,
-                                  shape: new RoundedRectangleBorder(
-                                      borderRadius:
-                                      new BorderRadius.circular(20.0)),
-                                  onPressed: () {
-                                    if (_formKey.currentState.validate()) {
-                                      _login();
+
+                                  validator: (emailValue) {
+                                    if (emailValue.isEmpty) {
+                                      return 'Please enter email';
                                     }
+                                    email = emailValue;
+                                    return null;
                                   },
+                                ),
+
+                                SizedBox(height: 20.0),
+                                TextFormField(
+                                  keyboardType: TextInputType.text,
+                                  obscureText: true,
+                                  style: TextStyle(
+                                      color: Colors.white
+                                  ),
+                                  decoration: InputDecoration(
+                                    labelText: 'Password',
+                                    labelStyle: TextStyle(
+                                        fontSize: 15,
+                                        color: orange,
+                                        fontWeight: FontWeight.w600
+                                    ),
+                                    focusedBorder: UnderlineInputBorder(
+                                        borderSide: BorderSide(color: orange)
+                                    ),
+                                  ),
+                                  validator: (passwordValue) {
+                                    if (passwordValue.isEmpty) {
+                                      return 'Please enter some text';
+                                    }
+                                    password = passwordValue;
+                                    return null;
+                                  },
+                                ),
+                                SizedBox(height: 5.0),
+                                Container(
+                                  alignment: Alignment(1.0, 0.0),
+                                  padding: EdgeInsets.only(top: 15.0, left: 20.0),
+                                  child: InkWell(
+                                      child:Text(
+                                        'Forget Password ?',
+                                        style: TextStyle(
+                                            color: Colors.white,
+                                            fontWeight: FontWeight.w600
+                                        ),
+                                      )
+                                  ),
+                                ),
+
+                                SizedBox(height: 60.0),
+                                ButtonTheme(
+                                  minWidth: double.infinity,
+                                  child : FlatButton(
+                                    child: Padding(
+                                      padding: EdgeInsets.only(
+                                          top: 10, bottom: 10, left: 10, right: 10),
+                                      child: Text(
+                                        _isLoading? 'Proccessing...' : 'Login',
+                                        textDirection: TextDirection.ltr,
+                                        style: TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 15.0,
+                                          decoration: TextDecoration.none,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                    ),
+                                    color: orange,
+                                    disabledColor: Colors.grey,
+                                    shape: new RoundedRectangleBorder(
+                                        borderRadius:
+                                        new BorderRadius.circular(20.0)),
+                                    onPressed: () {
+                                      if (_formKey.currentState.validate()) {
+                                        _login();
+                                      }
+                                    },
+                                  ),
+                                ),
+                              ],
+                            ),
+                          )
+                      ),
+
+                      Padding(
+                          padding: const EdgeInsets.only(top: 20),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: <Widget>[
+                              Text(
+                                'Baru di Decader ?',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 15,
+                                ),
+                              ),
+                              SizedBox(width: 5.0),
+                              InkWell(
+                                onTap: () {
+                                  Navigator.push(
+                                      context,
+                                      new MaterialPageRoute(
+                                          builder: (context) => Register()));
+                                },
+                                child: Text(
+                                  'Register',
+                                  style: TextStyle(
+                                    color: orange,
+                                    fontSize: 15.0,
+                                    decoration: TextDecoration.none,
+                                    fontWeight: FontWeight.w800,
+                                  ),
                                 ),
                               ),
                             ],
-                          ),
-                        ),
+                          )
                       ),
-                    ),
-
-                    Padding(
-                      padding: const EdgeInsets.only(top: 20),
-                      child: InkWell(
-                        onTap: () {
-                          Navigator.push(
-                              context,
-                              new MaterialPageRoute(
-                                  builder: (context) => Register()));
-                        },
-                        child: Text(
-                          'Create new Account',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 15.0,
-                            decoration: TextDecoration.none,
-                            fontWeight: FontWeight.normal,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
-              ),
-            )
-          ],
+              )
+            ],
+          ),
         ),
-      ),
+      )
     );
   }
   void _login() async{
