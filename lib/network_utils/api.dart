@@ -3,7 +3,7 @@ import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
 class Network{
-  final String _url = '192.168.1.67/decader/public/api/v1';
+  final String _url = 'https://decader.000webhostapp.com/api/v1';
   //if you are using android studio emulator, change localhost to 10.0.2.2
   var token;
 
