@@ -14,17 +14,20 @@ class DashboardScreen extends StatefulWidget{
 
 class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProviderStateMixin{
   String name;
+  int totalTabungan = 0;
   List namaTabungan = ["Tabungan Anak Sekolah", "Tabungan Haji", "Tabungan Motor", "Tabungan Liburan", "Tabungan Umroh"];
   List tabunganTercapai = ["Tabungan Kuliah", "Tabungan Pergi", "Tabungan Mobil", "Tabungan Holiday", "Tabungan Umroh"];
   List durasiTabungan = ["Bulanan", "Mingguan", "Bulanan", "Bulanan", "Bulanan"];
   List isiTabungan = ["200.000/\n10.000.000", "200.000/\n10.000.000", "200.000/\n10.000.000", "200.000/\n10.000.000", "200.000/\n10.000.000"];
   Color orange = const Color.fromRGBO(244, 144, 31, 1);
+  final String _url = 'https://decader.000webhostapp.com';
 
   TabController _pindahTab;
   @override
   void initState(){
     _pindahTab = new TabController(length: 2, vsync: this);
     _loadUserData();
+    _loadSavesData();
     super.initState();
   }
 
@@ -45,9 +48,28 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
     }
   }
 
+  List data;
+
+  _loadSavesData() async{
+    var res = await Network().getData('/read');
+    var body = json.decode(res.body);
+    if(body['success']){
+      Map<String, dynamic> map;
+      map = json.decode(res.body);
+
+      setState(() {
+        data = map["data"];
+      });
+      print(data);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
+    for(var i = 0; i < data.length; i++){
+      totalTabungan += data[i]['current_save'];
+    }
     return Scaffold(
       body: Container(
         color: Color.fromRGBO(12, 60, 70, 1),
@@ -85,8 +107,13 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
                                   width: 2,
                                 )
                             ),
-                            child : Image(
-                              image: NetworkImage("https://images.unsplash.com/photo-1608833970687-99bc4f54898d?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80"),
+                            child : GestureDetector(
+                              onTap: (){
+                                logout();
+                              },
+                              child: Image(
+                                image: NetworkImage("https://images.unsplash.com/photo-1608833970687-99bc4f54898d?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80"),
+                              ),
                             )
                         )
                       ]
@@ -105,7 +132,7 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
                       ),
                       SizedBox(height: screenHeight * 0.005),
                       Text(
-                        'Rp 100.000.000',
+                        'Rp. '+totalTabungan.toString()??'Rp. 0',
                         style: TextStyle(
                           color: Color.fromRGBO(244, 144, 31, 1),
                           fontSize: 28,
@@ -204,7 +231,7 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
                 controller: _pindahTab,
                 children: <Widget>[
                   ListView.builder(
-                    itemCount: 5,
+                    itemCount: data.length,
                     shrinkWrap: true,
                     itemBuilder: (BuildContext context, int index) => Container(
                       width: MediaQuery.of(context).size.width,
@@ -222,46 +249,51 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: <Widget>[
-                              Row(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: <Widget>[
-                                  Container(
-                                    width: 35,
-                                    height: 35,
-                                    child: CircleAvatar(
-                                      backgroundColor: Colors.white,
-                                      foregroundColor: Colors.white,
-                                      backgroundImage: NetworkImage("https://images.unsplash.com/photo-1608833970687-99bc4f54898d?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80"),
+                              Expanded(
+                                child: Row(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: <Widget>[
+                                    Container(
+                                      width: 35,
+                                      height: 35,
+                                      child: CircleAvatar(
+                                        backgroundColor: Colors.white,
+                                        foregroundColor: Colors.white,
+                                        backgroundImage: NetworkImage(_url+data[index]['image']),
+                                      ),
                                     ),
-                                  ),
-                                  SizedBox(width: 5.0),
-                                  Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: <Widget>[
-                                      Text(
-                                        namaTabungan[index],
-                                        style: TextStyle(
-                                            color: Colors.orange,
-                                            fontSize: 15.0,
-                                            fontWeight: FontWeight.w600
-                                        ),
+                                    SizedBox(width: 5.0),
+                                    Expanded(
+                                      child: Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: <Widget>[
+                                          Text(
+                                           data[index]['title'],
+                                            style: TextStyle(
+                                                color: Colors.orange,
+                                                fontSize: 15.0,
+                                                fontWeight: FontWeight.w600
+                                            ),
+                                          ),
+                                          SizedBox(height: 2),
+                                          Text(
+                                            'Rp. '+data[index]['plan'].toString()+' / bulan',
+                                            style: TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 11.0,
+                                            ),
+                                          ),
+                                        ],
                                       ),
-                                      SizedBox(height: 2),
-                                      Text(
-                                        durasiTabungan[index],
-                                        style: TextStyle(
-                                          color: Colors.white,
-                                          fontSize: 11.0,
-                                        ),
-                                      ),
-                                    ],
-                                  )
-                                ],
+                                    )
+                                  ],
+                                ),
                               ),
                               Container(
+                                width: 100,
                                 alignment: Alignment.centerRight,
                                 child: Text(
-                                  isiTabungan[index],
+                                  'Rp. '+data[index]['current_save'].toString()+' / Rp. '+data[index]['target_total'].toString(),
                                   style: TextStyle(
                                       color: Colors.orange,
                                       fontSize: 14,
