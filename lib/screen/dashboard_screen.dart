@@ -2,7 +2,9 @@ import 'dart:convert';
 
 import 'package:bubble_tab_indicator/bubble_tab_indicator.dart';
 import 'package:decader/network_utils/api.dart';
+import 'package:decader/screen/create_tabungan_screen.dart';
 import 'package:decader/screen/login.dart';
+import 'package:decader/screen/read_tabungan_screen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -49,6 +51,7 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
     return Scaffold(
+      resizeToAvoidBottomPadding: false,
       body: Container(
         color: Color.fromRGBO(12, 60, 70, 1),
         child: Column(
@@ -155,7 +158,10 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
                       borderRadius:
                       new BorderRadius.circular(10.0)),
                   onPressed: () {
-
+                    Navigator.push(
+                        context,
+                        new MaterialPageRoute(
+                            builder: (context) => CreateTabunganScreen()));
                   },
                 ),
               ),
@@ -215,61 +221,68 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(0.0),
                         ),
-                        child: Container(
-                          width: MediaQuery.of(context).size.width,
-                          padding: EdgeInsets.symmetric(horizontal: 10, vertical: 20),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: <Widget>[
-                              Row(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: <Widget>[
-                                  Container(
-                                    width: 35,
-                                    height: 35,
-                                    child: CircleAvatar(
-                                      backgroundColor: Colors.white,
-                                      foregroundColor: Colors.white,
-                                      backgroundImage: NetworkImage("https://images.unsplash.com/photo-1608833970687-99bc4f54898d?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80"),
+                        child: InkWell(
+                          onTap: (){
+                            Navigator.push(
+                                context,
+                                new MaterialPageRoute(builder: (context) => ReadTabunganScreen()));
+                          },
+                          child: Container(
+                            width: MediaQuery.of(context).size.width,
+                            padding: EdgeInsets.symmetric(horizontal: 10, vertical: 20),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: <Widget>[
+                                Row(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: <Widget>[
+                                    Container(
+                                      width: 35,
+                                      height: 35,
+                                      child: CircleAvatar(
+                                        backgroundColor: Colors.white,
+                                        foregroundColor: Colors.white,
+                                        backgroundImage: NetworkImage("https://images.unsplash.com/photo-1608833970687-99bc4f54898d?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80"),
+                                      ),
+                                    ),
+                                    SizedBox(width: 5.0),
+                                    Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: <Widget>[
+                                        Text(
+                                          namaTabungan[index],
+                                          style: TextStyle(
+                                              color: Colors.orange,
+                                              fontSize: 15.0,
+                                              fontWeight: FontWeight.w600
+                                          ),
+                                        ),
+                                        SizedBox(height: 2),
+                                        Text(
+                                          durasiTabungan[index],
+                                          style: TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 11.0,
+                                          ),
+                                        ),
+                                      ],
+                                    )
+                                  ],
+                                ),
+                                Container(
+                                  alignment: Alignment.centerRight,
+                                  child: Text(
+                                    isiTabungan[index],
+                                    style: TextStyle(
+                                        color: Colors.orange,
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w600
                                     ),
                                   ),
-                                  SizedBox(width: 5.0),
-                                  Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: <Widget>[
-                                      Text(
-                                        namaTabungan[index],
-                                        style: TextStyle(
-                                            color: Colors.orange,
-                                            fontSize: 15.0,
-                                            fontWeight: FontWeight.w600
-                                        ),
-                                      ),
-                                      SizedBox(height: 2),
-                                      Text(
-                                        durasiTabungan[index],
-                                        style: TextStyle(
-                                          color: Colors.white,
-                                          fontSize: 11.0,
-                                        ),
-                                      ),
-                                    ],
-                                  )
-                                ],
-                              ),
-                              Container(
-                                alignment: Alignment.centerRight,
-                                child: Text(
-                                  isiTabungan[index],
-                                  style: TextStyle(
-                                      color: Colors.orange,
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.w600
-                                  ),
                                 ),
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
                         ),
                       ),
