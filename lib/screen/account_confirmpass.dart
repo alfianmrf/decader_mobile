@@ -71,6 +71,7 @@ class _ConfirmState extends State<Confirmpass> {
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     children: <Widget>[
                                       Container(
+                                        margin: EdgeInsets.only(top:45),
                                         padding: EdgeInsets.fromLTRB(
                                             15.0, 60.0, 0.0, 0.0),
                                         child: Text(
@@ -82,7 +83,6 @@ class _ConfirmState extends State<Confirmpass> {
                                           ),
                                         ),
                                       ),
-
                                       Container(
                                         padding: EdgeInsets.fromLTRB(
                                             17.0, 8, 0.0, 0.0),
@@ -96,6 +96,7 @@ class _ConfirmState extends State<Confirmpass> {
                                         ),
                                       ),
 
+                                      SizedBox(height: 15),
                                       Container(
                                         padding: EdgeInsets.fromLTRB(
                                             17.0, 8, 0.0, 0.0),
