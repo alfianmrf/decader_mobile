@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:decader/network_utils/api.dart';
 import 'package:decader/screen/home.dart';
+import 'package:decader/screen/edit_tabungan_screen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -423,7 +424,10 @@ class _ReadTabunganScreenState extends State<ReadTabunganScreen> {
                                                borderRadius:
                                                new BorderRadius.circular(20.0)),
                                            onPressed: () {
-
+                                             Navigator.push(
+                                                 context,
+                                                 new MaterialPageRoute(
+                                                     builder: (context) => EditTabunganScreen(widget.detail)));
                                            },
                                          ),
                                        ),

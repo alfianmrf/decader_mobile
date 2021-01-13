@@ -1,16 +1,26 @@
+import 'dart:convert';
 import 'dart:io';
+import 'package:decader/network_utils/api.dart';
+import 'package:decader/screen/home.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
 class EditTabunganScreen extends StatefulWidget{
+  Map save;
+
+  EditTabunganScreen(this.save);
+
   @override
   _EditTabunganScreenState createState() => _EditTabunganScreenState();
 }
 
 class _EditTabunganScreenState extends State<EditTabunganScreen> {
   final _formKey = GlobalKey<FormState>();
+  final String _url = 'https://decader.000webhostapp.com';
   Color orange = const Color.fromRGBO(244, 144, 31, 1);
   Color field = const Color.fromRGBO(227, 238, 240, 1);
+  DateTime selectedDate = DateTime.now();
+  bool updateDate = false;
 
   //image picker
   PickedFile _imageFile;
@@ -115,6 +125,7 @@ class _EditTabunganScreenState extends State<EditTabunganScreen> {
                                           child: Padding(
                                             padding: const EdgeInsets.symmetric(horizontal: 15),
                                             child: TextFormField(
+                                              initialValue: widget.save['title'],
                                               style: TextStyle(
                                                 color: Color(0xFF000000),
                                                 fontSize: 15,
@@ -178,6 +189,7 @@ class _EditTabunganScreenState extends State<EditTabunganScreen> {
                                                   padding: const EdgeInsets.symmetric(horizontal: 15),
                                                   child: Flexible(
                                                     child: TextFormField(
+                                                      initialValue: widget.save['description'],
                                                       style: TextStyle(
                                                         color: Color(0xFF000000),
                                                         fontSize: 15,
@@ -220,7 +232,7 @@ class _EditTabunganScreenState extends State<EditTabunganScreen> {
                                                     radius: 80.0,
                                                     backgroundColor: Colors.white,
                                                     backgroundImage: _imageFile == null
-                                                        ? AssetImage("images/person.png") : FileImage(File(_imageFile.path)),
+                                                        ? NetworkImage(_url+widget.save['image']) : FileImage(File(_imageFile.path)),
                                                   ),
                                                   Positioned(
                                                     bottom: 6.0,
@@ -290,6 +302,7 @@ class _EditTabunganScreenState extends State<EditTabunganScreen> {
 
                                                 Flexible(
                                                   child: TextFormField(
+                                                    initialValue: widget.save['target_total'].toString(),
                                                     style: TextStyle(
                                                       color: Color(0xFF000000),
                                                       fontSize: 15,
@@ -414,7 +427,7 @@ class _EditTabunganScreenState extends State<EditTabunganScreen> {
                                                   ),
                                                   SizedBox(height: 10),
                                                   Text(
-                                                    '11 Jan 2021',
+                                                    widget.save['created_at'].substring(0,10),
                                                     style: TextStyle(
                                                       fontSize: 18,
                                                       fontWeight: FontWeight.w600,
@@ -432,46 +445,49 @@ class _EditTabunganScreenState extends State<EditTabunganScreen> {
                                                 fontWeight: FontWeight.w500,
                                               ),
                                             ),
-                                            Container(
-                                              padding: EdgeInsets.symmetric(horizontal: 15, vertical: 10),
-                                              width: MediaQuery.of(context).size.width * 0.38,
-                                              decoration: BoxDecoration(
-                                                color: Colors.white,
-                                                borderRadius: BorderRadius.all(Radius.circular(15)),
-                                              ),
-                                              child: Column(
-                                                mainAxisAlignment: MainAxisAlignment.start,
-                                                children: <Widget>[
-                                                  Row(
-                                                    mainAxisAlignment: MainAxisAlignment.start,
-                                                    crossAxisAlignment: CrossAxisAlignment.center,
-                                                    children: <Widget>[
-                                                      Icon(
-                                                        Icons.calendar_today,
-                                                        color: orange,
-                                                        size: 17,
-                                                      ),
-                                                      SizedBox(width: 5),
-                                                      Text(
-                                                        'End Date',
-                                                        style: TextStyle(
-                                                          fontSize: 13,
-                                                          fontWeight: FontWeight.w500,
+                                            GestureDetector(
+                                              onTap: () => _selectDate(context),
+                                              child: Container(
+                                                padding: EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+                                                width: MediaQuery.of(context).size.width * 0.38,
+                                                decoration: BoxDecoration(
+                                                  color: Colors.white,
+                                                  borderRadius: BorderRadius.all(Radius.circular(15)),
+                                                ),
+                                                child: Column(
+                                                  mainAxisAlignment: MainAxisAlignment.start,
+                                                  children: <Widget>[
+                                                    Row(
+                                                      mainAxisAlignment: MainAxisAlignment.start,
+                                                      crossAxisAlignment: CrossAxisAlignment.center,
+                                                      children: <Widget>[
+                                                        Icon(
+                                                          Icons.calendar_today,
                                                           color: orange,
+                                                          size: 17,
                                                         ),
-                                                      ),
-                                                    ],
-                                                  ),
-                                                  SizedBox(height: 10),
-                                                  Text(
-                                                    '21 Jan 2023',
-                                                    style: TextStyle(
-                                                      fontSize: 18,
-                                                      fontWeight: FontWeight.w600,
-                                                      color: Colors.black87,
+                                                        SizedBox(width: 5),
+                                                        Text(
+                                                          'End Date',
+                                                          style: TextStyle(
+                                                            fontSize: 13,
+                                                            fontWeight: FontWeight.w500,
+                                                            color: orange,
+                                                          ),
+                                                        ),
+                                                      ],
                                                     ),
-                                                  ),
-                                                ],
+                                                    SizedBox(height: 10),
+                                                    Text(
+                                                      updateDate ? "${selectedDate.toLocal()}".split(' ')[0] : widget.save['target_date'],
+                                                      style: TextStyle(
+                                                        fontSize: 18,
+                                                        fontWeight: FontWeight.w600,
+                                                        color: Colors.black87,
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
                                               ),
                                             ),
                                           ],
@@ -534,6 +550,7 @@ class _EditTabunganScreenState extends State<EditTabunganScreen> {
                                           new BorderRadius.circular(20.0)),
                                       onPressed: () {
                                         if (_formKey.currentState.validate()) {
+                                          _delete();
                                         }
                                       },
                                     ),
@@ -552,6 +569,43 @@ class _EditTabunganScreenState extends State<EditTabunganScreen> {
         ),
       ),
     );
+  }
+
+  _selectDate(BuildContext context) async {
+    final DateTime picked = await showDatePicker(
+      context: context,
+      initialDate: selectedDate, // Refer step 1
+      firstDate: DateTime.now(),
+      lastDate: DateTime(2025),
+    );
+    if (picked != null && picked != selectedDate)
+      setState(() {
+        selectedDate = picked;
+        updateDate = true;
+      });
+  }
+
+  void _delete()async{
+    var data = {
+      'id' : widget.save['id'],
+    };
+
+    var res = await Network().authData(data, '/delete');
+    var body = json.decode(res.body);
+    if(body['success']==true){
+      Navigator.push(
+        context,
+        new MaterialPageRoute(
+            builder: (context) => Home()
+        ),
+      );
+    }
+    else if(body['success']==false){
+      print("GAGAL");
+    }
+    else{
+      print(body);
+    }
   }
 
   Widget bottomSheet(){
