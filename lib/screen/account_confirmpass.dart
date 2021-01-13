@@ -1,18 +1,20 @@
 import 'dart:convert';
-import 'package:decader/screen/account_confirmpass.dart';
+import 'package:decader/screen/account_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'account_edit.dart';
 
-class AccountScreen extends StatefulWidget{
+class Confirmpass extends StatefulWidget {
   @override
-  _AccountScreenState createState() => _AccountScreenState();
+  _ConfirmState createState() => _ConfirmState();
 }
 
-class _AccountScreenState extends State<AccountScreen> {
+class _ConfirmState extends State<Confirmpass> {
   bool _isLoading = false;
   final _formKey = GlobalKey<FormState>();
+  final _passwordController = TextEditingController();
+  final _confirmPasswordController = TextEditingController();
   Color orange = const Color.fromRGBO(244, 144, 31, 1);
   var email;
   var password;
@@ -21,23 +23,19 @@ class _AccountScreenState extends State<AccountScreen> {
   var phone;
 
   @override
-  void initState(){
+  void initState() {
     _loadUserData();
     super.initState();
   }
 
   @override
-  _loadUserData() async{
+  _loadUserData() async {
     SharedPreferences localStorage = await SharedPreferences.getInstance();
     var user = jsonDecode(localStorage.getString('user'));
 
-    if(user != null) {
+    if (user != null) {
       setState(() {
-        fname = user['fname'];
-        lname = user['lname'];
-        email = user['email'];
         password = user['password'];
-        phone = user['phone'];
       });
     }
   }
@@ -87,9 +85,9 @@ class _AccountScreenState extends State<AccountScreen> {
                                       padding: EdgeInsets.fromLTRB(
                                           17.0, 8, 0.0, 0.0),
                                       child: Text(
-                                        'hai $fname',
+                                        'Ubah Informasi Akun',
                                         style: TextStyle(
-                                            fontSize: 20.0,
+                                            fontSize: 18.0,
                                             fontWeight: FontWeight.w600,
                                             color: Colors.white
                                         ),
@@ -100,86 +98,51 @@ class _AccountScreenState extends State<AccountScreen> {
                                       padding: EdgeInsets.fromLTRB(
                                           17.0, 8, 0.0, 0.0),
                                       child: Text(
-                                        'Informasi Akun',
+                                        'Konfirmasi Kata Sandi',
                                         style: TextStyle(
-                                            fontSize: 20.0,
+                                            fontSize: 18.0,
                                             fontWeight: FontWeight.w600,
-                                            color: orange,
+                                            color: orange
                                         ),
                                       ),
                                     ),
 
                                     Container(
                                         padding: EdgeInsets.only(
-                                            top: 25.0, left: 20.0, right: 20.0),
+                                            top: 15.0, left: 20.0, right: 20.0),
+                                        child: Form(
+                                          key: _formKey,
                                           child: Column(
-                                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                            crossAxisAlignment: CrossAxisAlignment.start,
                                             children: <Widget>[
-                                              Text(
-                                                'Email',
+                                              TextFormField(
+                                                controller: _passwordController,
+                                                keyboardType: TextInputType
+                                                    .text,
+                                                obscureText: true,
                                                 style: TextStyle(
-                                                    fontSize: 15.0,
-                                                    fontWeight: FontWeight.w600,
-                                                    color: orange,
+                                                    color: Colors.white
                                                 ),
-                                              ),
-
-                                              Text(
-                                                '$email',
-                                                style: TextStyle(
-                                                  fontSize: 18.0,
-                                                  fontWeight: FontWeight.w600,
-                                                  color: Colors.white,
+                                                decoration: InputDecoration(
+                                                  labelText: 'Password',
+                                                  labelStyle: TextStyle(
+                                                      fontSize: 15,
+                                                      color: orange,
+                                                      fontWeight: FontWeight
+                                                          .w600
+                                                  ),
+                                                  focusedBorder: UnderlineInputBorder(
+                                                      borderSide: BorderSide(
+                                                          color: orange)
+                                                  ),
                                                 ),
+                                                validator: (passwordValue) {
+                                                  if (passwordValue.isEmpty) {
+                                                    return 'Please enter some text';
+                                                  }
+                                                  password = passwordValue;
+                                                  return null;
+                                                },
                                               ),
-
-                                              Container(
-                                                height: 10.0,
-                                              ),
-
-                                              Text(
-                                                'Full Name',
-                                                style: TextStyle(
-                                                  fontSize: 15.0,
-                                                  fontWeight: FontWeight.w600,
-                                                  color: orange,
-                                                ),
-                                              ),
-
-                                              Text(
-                                                '$fname $lname',
-                                                style: TextStyle(
-                                                  fontSize: 18.0,
-                                                  fontWeight: FontWeight.w600,
-                                                  color: Colors.white,
-                                                ),
-                                              ),
-
-                                              Container(
-                                                height: 10.0,
-                                              ),
-
-
-                                              Text(
-                                                'Phone',
-                                                style: TextStyle(
-                                                  fontSize: 15.0,
-                                                  fontWeight: FontWeight.w600,
-                                                  color: orange,
-                                                ),
-                                              ),
-
-                                              Text(
-                                                '$phone',
-                                                style: TextStyle(
-                                                  fontSize: 18.0,
-                                                  fontWeight: FontWeight.w600,
-                                                  color: Colors.white,
-                                                ),
-                                              ),
-
-
 
                                               SizedBox(height: 20.0),
                                               ButtonTheme(
@@ -194,7 +157,7 @@ class _AccountScreenState extends State<AccountScreen> {
                                                     child: Text(
                                                       _isLoading
                                                           ? 'Proccessing...'
-                                                          : 'Ubah Informasi Akun',
+                                                          : 'Konfirmasi',
                                                       textDirection: TextDirection
                                                           .ltr,
                                                       style: TextStyle(
@@ -214,16 +177,61 @@ class _AccountScreenState extends State<AccountScreen> {
                                                       new BorderRadius.circular(
                                                           20.0)),
                                                   onPressed: () {
+                                                    if (_formKey.currentState
+                                                        .validate()) {
+                                                      _login();
                                                       Navigator.push(
                                                           context,
                                                           new MaterialPageRoute(
-                                                              builder: (context) => Confirmpass()));
-                                                    },
+                                                              builder: (
+                                                                  context) =>
+                                                                  Edit()));
+                                                    }
+                                                  },
                                                 ),
                                               ),
                                             ],
                                           ),
                                         )
+                                    ),
+
+                                    Padding(
+                                        padding: const EdgeInsets.only(
+                                            top: 20, bottom: 20),
+                                        child: Row(
+                                          mainAxisAlignment: MainAxisAlignment
+                                              .center,
+                                          children: <Widget>[
+                                            Text(
+                                              'Tidak jadi Mengganti Informasi ?',
+                                              style: TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 15,
+                                              ),
+                                            ),
+                                            SizedBox(width: 5.0),
+                                            InkWell(
+                                              onTap: () {
+                                                Navigator.push(
+                                                    context,
+                                                    new MaterialPageRoute(
+                                                        builder: (context) =>
+                                                            AccountScreen()));
+                                              },
+                                              child: Text(
+                                                'Batalkan',
+                                                style: TextStyle(
+                                                  color: orange,
+                                                  fontSize: 15.0,
+                                                  decoration: TextDecoration
+                                                      .none,
+                                                  fontWeight: FontWeight.w800,
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        )
+                                    ),
                                   ],
                                 ),
                               ),
@@ -237,5 +245,15 @@ class _AccountScreenState extends State<AccountScreen> {
           ),
         )
     );
+  }
+
+  void _login() async {
+    setState(() {
+      _isLoading = true;
+    });
+    var data = {
+      'email': email,
+      'password': password
+    };
   }
 }
