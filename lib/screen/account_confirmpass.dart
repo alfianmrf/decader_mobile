@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:decader/screen/account_screen.dart';
+import 'package:decader/screen/home.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -219,7 +220,7 @@ class _ConfirmState extends State<Confirmpass> {
                                                       context,
                                                       new MaterialPageRoute(
                                                           builder: (context) =>
-                                                              AccountScreen()));
+                                                              Home()));
                                                 },
                                                 child: Text(
                                                   'Batalkan',
