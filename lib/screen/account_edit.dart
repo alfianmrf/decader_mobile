@@ -31,6 +31,7 @@ class _EditState extends State<Edit> {
           ),
         ),
         child : Scaffold(
+          resizeToAvoidBottomPadding: false,
           backgroundColor: Colors.transparent,
           body: SingleChildScrollView(
               child : Stack(
