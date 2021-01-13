@@ -9,6 +9,7 @@ class CreateTabunganScreen extends StatefulWidget{
 
 class _CreateTabunganScreenState extends State<CreateTabunganScreen> {
   final _formKey = GlobalKey<FormState>();
+  DateTime selectedDate = DateTime.now();
   Color orange = const Color.fromRGBO(244, 144, 31, 1);
   Color field = const Color.fromRGBO(227, 238, 240, 1);
 
@@ -332,7 +333,7 @@ class _CreateTabunganScreenState extends State<CreateTabunganScreen> {
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     children: <Widget>[
                                       Text(
-                                        'Frekuensi',
+                                        'Rencana Tabungan (per bulan)',
                                         style: TextStyle(
                                           fontSize: 15,
                                           fontWeight: FontWeight.w600,
@@ -347,20 +348,57 @@ class _CreateTabunganScreenState extends State<CreateTabunganScreen> {
                                             borderRadius: BorderRadius.circular(15)
                                         ),
                                         child: Padding(
-                                          padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 15),
-                                          child: Container(
-                                            width: double.infinity,
-                                            child: Text(
-                                                'Bulanan',
+                                          padding: const EdgeInsets.symmetric(horizontal: 15),
+                                          child: Row(
+                                            children: <Widget>[
+                                              Text(
+                                                'Rp',
                                                 style: TextStyle(
-                                                  color: Color(0xFF000000),
                                                   fontSize: 15,
+                                                  color: Colors.black87,
                                                   fontWeight: FontWeight.w600,
                                                 ),
                                               ),
-                                          ),
+                                              Container(
+                                                color: Colors.black54,
+                                                width: 2,
+                                                height: MediaQuery.of(context).size.height * 0.03,
+                                                margin: EdgeInsets.symmetric(horizontal: 5),
+                                              ),
+
+                                              Flexible(
+                                                child: TextFormField(
+                                                  style: TextStyle(
+                                                    color: Color(0xFF000000),
+                                                    fontSize: 15,
+                                                    fontWeight: FontWeight.w600,
+                                                  ),
+                                                  cursorColor: Color(0xFF9b9b9b),
+                                                  keyboardType: TextInputType.number,
+                                                  decoration: InputDecoration(
+                                                    hintText: "Masukkan Nominal Rencana Tabungan Anda",
+                                                    hintStyle: TextStyle(
+                                                        color: Color(0xFF9b9b9b),
+                                                        fontSize: 13,
+                                                        fontWeight: FontWeight.w500),
+                                                    border: InputBorder.none,
+                                                    focusedBorder: InputBorder.none,
+                                                    enabledBorder: InputBorder.none,
+                                                    errorBorder: InputBorder.none,
+                                                    disabledBorder: InputBorder.none,
+                                                  ),
+                                                  validator: (rencanaTabunganValue) {
+                                                    if (rencanaTabunganValue.isEmpty) {
+                                                      return 'Please enter some text';
+                                                    }
+                                                    return null;
+                                                  },
+                                                ),
+                                              ),
+                                            ],
                                           ),
                                         ),
+                                      ),
                                     ],
                                   ),
                                 ),
@@ -414,7 +452,7 @@ class _CreateTabunganScreenState extends State<CreateTabunganScreen> {
                                                 ),
                                                 SizedBox(height: 10),
                                                 Text(
-                                                  '11 Jan 2021',
+                                                  DateTime.now().toLocal().toString().split(' ')[0],
                                                   style: TextStyle(
                                                     fontSize: 18,
                                                     fontWeight: FontWeight.w600,
@@ -432,46 +470,49 @@ class _CreateTabunganScreenState extends State<CreateTabunganScreen> {
                                               fontWeight: FontWeight.w500,
                                             ),
                                           ),
-                                          Container(
-                                            padding: EdgeInsets.symmetric(horizontal: 15, vertical: 10),
-                                            width: MediaQuery.of(context).size.width * 0.38,
-                                            decoration: BoxDecoration(
-                                              color: Colors.white,
-                                              borderRadius: BorderRadius.all(Radius.circular(15)),
-                                            ),
-                                            child: Column(
-                                              mainAxisAlignment: MainAxisAlignment.start,
-                                              children: <Widget>[
-                                                Row(
-                                                  mainAxisAlignment: MainAxisAlignment.start,
-                                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                                  children: <Widget>[
-                                                    Icon(
-                                                      Icons.calendar_today,
-                                                      color: orange,
-                                                      size: 17,
-                                                    ),
-                                                    SizedBox(width: 5),
-                                                    Text(
-                                                      'End Date',
-                                                      style: TextStyle(
-                                                        fontSize: 13,
-                                                        fontWeight: FontWeight.w500,
+                                          GestureDetector(
+                                            onTap: () => _selectDate(context),
+                                            child: Container(
+                                              padding: EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+                                              width: MediaQuery.of(context).size.width * 0.38,
+                                              decoration: BoxDecoration(
+                                                color: Colors.white,
+                                                borderRadius: BorderRadius.all(Radius.circular(15)),
+                                              ),
+                                              child: Column(
+                                                mainAxisAlignment: MainAxisAlignment.start,
+                                                children: <Widget>[
+                                                  Row(
+                                                    mainAxisAlignment: MainAxisAlignment.start,
+                                                    crossAxisAlignment: CrossAxisAlignment.center,
+                                                    children: <Widget>[
+                                                      Icon(
+                                                        Icons.calendar_today,
                                                         color: orange,
+                                                        size: 17,
                                                       ),
-                                                    ),
-                                                  ],
-                                                ),
-                                                SizedBox(height: 10),
-                                                Text(
-                                                  '21 Jan 2023',
-                                                  style: TextStyle(
-                                                    fontSize: 18,
-                                                    fontWeight: FontWeight.w600,
-                                                    color: Colors.black87,
+                                                      SizedBox(width: 5),
+                                                      Text(
+                                                        'End Date',
+                                                        style: TextStyle(
+                                                          fontSize: 13,
+                                                          fontWeight: FontWeight.w500,
+                                                          color: orange,
+                                                        ),
+                                                      ),
+                                                    ],
                                                   ),
-                                                ),
-                                              ],
+                                                  SizedBox(height: 10),
+                                                  Text(
+                                                    "${selectedDate.toLocal()}".split(' ')[0],
+                                                    style: TextStyle(
+                                                      fontSize: 18,
+                                                      fontWeight: FontWeight.w600,
+                                                      color: Colors.black87,
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
                                             ),
                                           ),
                                         ],
@@ -567,6 +608,19 @@ class _CreateTabunganScreenState extends State<CreateTabunganScreen> {
         ],
       ),
     );
+  }
+
+  _selectDate(BuildContext context) async {
+    final DateTime picked = await showDatePicker(
+      context: context,
+      initialDate: selectedDate, // Refer step 1
+      firstDate: DateTime.now(),
+      lastDate: DateTime(2025),
+    );
+    if (picked != null && picked != selectedDate)
+      setState(() {
+        selectedDate = picked;
+      });
   }
 
   //method ambil foto

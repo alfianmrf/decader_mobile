@@ -322,8 +322,8 @@ class _EditTabunganScreenState extends State<EditTabunganScreen> {
                                                       errorBorder: InputBorder.none,
                                                       disabledBorder: InputBorder.none,
                                                     ),
-                                                    validator: (namaTabunganValue) {
-                                                      if (namaTabunganValue.isEmpty) {
+                                                    validator: (targetTabunganValue) {
+                                                      if (targetTabunganValue.isEmpty) {
                                                         return 'Please enter some text';
                                                       }
                                                       return null;
@@ -333,7 +333,7 @@ class _EditTabunganScreenState extends State<EditTabunganScreen> {
                                               ],
                                             ),
                                           ),
-                                        )
+                                        ),
                                       ],
                                     ),
                                   ),
@@ -345,7 +345,7 @@ class _EditTabunganScreenState extends State<EditTabunganScreen> {
                                       crossAxisAlignment: CrossAxisAlignment.start,
                                       children: <Widget>[
                                         Text(
-                                          'Frekuensi',
+                                          'Rencana Tabungan (per bulan)',
                                           style: TextStyle(
                                             fontSize: 15,
                                             fontWeight: FontWeight.w600,
@@ -360,17 +360,55 @@ class _EditTabunganScreenState extends State<EditTabunganScreen> {
                                               borderRadius: BorderRadius.circular(15)
                                           ),
                                           child: Padding(
-                                            padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 15),
-                                            child: Container(
-                                              width: double.infinity,
-                                              child: Text(
-                                                'Bulanan',
-                                                style: TextStyle(
-                                                  color: Color(0xFF000000),
-                                                  fontSize: 15,
-                                                  fontWeight: FontWeight.w600,
+                                            padding: const EdgeInsets.symmetric(horizontal: 15),
+                                            child: Row(
+                                              children: <Widget>[
+                                                Text(
+                                                  'Rp',
+                                                  style: TextStyle(
+                                                    fontSize: 15,
+                                                    color: Colors.black87,
+                                                    fontWeight: FontWeight.w600,
+                                                  ),
                                                 ),
-                                              ),
+                                                Container(
+                                                  color: Colors.black54,
+                                                  width: 2,
+                                                  height: MediaQuery.of(context).size.height * 0.03,
+                                                  margin: EdgeInsets.symmetric(horizontal: 5),
+                                                ),
+
+                                                Flexible(
+                                                  child: TextFormField(
+                                                    initialValue: widget.save['plan'].toString(),
+                                                    style: TextStyle(
+                                                      color: Color(0xFF000000),
+                                                      fontSize: 15,
+                                                      fontWeight: FontWeight.w600,
+                                                    ),
+                                                    cursorColor: Color(0xFF9b9b9b),
+                                                    keyboardType: TextInputType.number,
+                                                    decoration: InputDecoration(
+                                                      hintText: "Masukkan Nominal Rencana Tabungan Anda",
+                                                      hintStyle: TextStyle(
+                                                          color: Color(0xFF9b9b9b),
+                                                          fontSize: 13,
+                                                          fontWeight: FontWeight.w500),
+                                                      border: InputBorder.none,
+                                                      focusedBorder: InputBorder.none,
+                                                      enabledBorder: InputBorder.none,
+                                                      errorBorder: InputBorder.none,
+                                                      disabledBorder: InputBorder.none,
+                                                    ),
+                                                    validator: (rencanaTabunganValue) {
+                                                      if (rencanaTabunganValue.isEmpty) {
+                                                        return 'Please enter some text';
+                                                      }
+                                                      return null;
+                                                    },
+                                                  ),
+                                                ),
+                                              ],
                                             ),
                                           ),
                                         ),
