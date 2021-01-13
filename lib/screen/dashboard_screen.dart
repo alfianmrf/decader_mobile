@@ -2,10 +2,13 @@ import 'dart:convert';
 
 import 'package:bubble_tab_indicator/bubble_tab_indicator.dart';
 import 'package:decader/network_utils/api.dart';
+import 'package:decader/screen/create_tabungan_screen.dart';
 import 'package:decader/screen/login.dart';
+import 'package:decader/screen/read_tabungan_screen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:intl/intl.dart';
 
 class DashboardScreen extends StatefulWidget{
   @override
@@ -13,7 +16,7 @@ class DashboardScreen extends StatefulWidget{
 }
 
 class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProviderStateMixin{
-  String name;
+  String name, cektoken;
   int totalTabungan = 0;
   List namaTabungan = ["Tabungan Anak Sekolah", "Tabungan Haji", "Tabungan Motor", "Tabungan Liburan", "Tabungan Umroh"];
   List tabunganTercapai = ["Tabungan Kuliah", "Tabungan Pergi", "Tabungan Mobil", "Tabungan Holiday", "Tabungan Umroh"];
@@ -40,10 +43,12 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
   _loadUserData() async{
     SharedPreferences localStorage = await SharedPreferences.getInstance();
     var user = jsonDecode(localStorage.getString('user'));
+    var token = jsonDecode(localStorage.getString('token'));
 
     if(user != null) {
       setState(() {
         name = user['fname'];
+        cektoken = token['token'];
       });
     }
   }
@@ -61,16 +66,17 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
         data = map["data"];
       });
       print(data);
+      for(var i = 0; i < data.length; i++){
+        totalTabungan += data[i]['current_save'];
+      }
     }
   }
 
   @override
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
-    for(var i = 0; i < data.length; i++){
-      totalTabungan += data[i]['current_save'];
-    }
     return Scaffold(
+      resizeToAvoidBottomPadding: false,
       body: Container(
         color: Color.fromRGBO(12, 60, 70, 1),
         child: Column(
@@ -132,7 +138,7 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
                       ),
                       SizedBox(height: screenHeight * 0.005),
                       Text(
-                        'Rp. '+totalTabungan.toString()??'Rp. 0',
+                        NumberFormat.simpleCurrency(locale: "id_ID",decimalDigits: 0 ).format(totalTabungan)??'Rp. 0',
                         style: TextStyle(
                           color: Color.fromRGBO(244, 144, 31, 1),
                           fontSize: 28,
@@ -165,7 +171,6 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
                           SizedBox(width: 15),
                           Text(
                             'Buat Rencana Tabungan',
-                            textDirection: TextDirection.ltr,
                             style: TextStyle(
                               color: Colors.white,
                               fontSize: 16.0,
@@ -182,7 +187,10 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
                       borderRadius:
                       new BorderRadius.circular(10.0)),
                   onPressed: () {
-
+                    Navigator.push(
+                        context,
+                        new MaterialPageRoute(
+                            builder: (context) => CreateTabunganScreen()));
                   },
                 ),
               ),
@@ -242,66 +250,73 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(0.0),
                         ),
-                        child: Container(
-                          width: MediaQuery.of(context).size.width,
-                          padding: EdgeInsets.symmetric(horizontal: 10, vertical: 20),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: <Widget>[
-                              Expanded(
-                                child: Row(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: <Widget>[
-                                    Container(
-                                      width: 35,
-                                      height: 35,
-                                      child: CircleAvatar(
-                                        backgroundColor: Colors.white,
-                                        foregroundColor: Colors.white,
-                                        backgroundImage: NetworkImage(_url+data[index]['image']),
+                        child: InkWell(
+                          onTap: (){
+                            Navigator.push(
+                                context,
+                                new MaterialPageRoute(builder: (context) => ReadTabunganScreen(data[index])));
+                          },
+                          child: Container(
+                            width: MediaQuery.of(context).size.width,
+                            padding: EdgeInsets.symmetric(horizontal: 10, vertical: 20),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: <Widget>[
+                                Expanded(
+                                  child: Row(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: <Widget>[
+                                      Container(
+                                        width: 35,
+                                        height: 35,
+                                        child: CircleAvatar(
+                                          backgroundColor: Colors.white,
+                                          foregroundColor: Colors.white,
+                                          backgroundImage: NetworkImage(_url+data[index]['image']),
+                                        ),
                                       ),
-                                    ),
-                                    SizedBox(width: 5.0),
-                                    Expanded(
-                                      child: Column(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                        children: <Widget>[
-                                          Text(
-                                           data[index]['title'],
-                                            style: TextStyle(
-                                                color: Colors.orange,
-                                                fontSize: 15.0,
-                                                fontWeight: FontWeight.w600
+                                      SizedBox(width: 5.0),
+                                      Expanded(
+                                        child: Column(
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          children: <Widget>[
+                                            Text(
+                                             data[index]['title'],
+                                              style: TextStyle(
+                                                  color: Colors.orange,
+                                                  fontSize: 15.0,
+                                                  fontWeight: FontWeight.w600
+                                              ),
                                             ),
-                                          ),
-                                          SizedBox(height: 2),
-                                          Text(
-                                            'Rp. '+data[index]['plan'].toString()+' / bulan',
-                                            style: TextStyle(
-                                              color: Colors.white,
-                                              fontSize: 11.0,
+                                            SizedBox(height: 2),
+                                            Text(
+                                              NumberFormat.simpleCurrency(locale: "id_ID",decimalDigits: 0 ).format(data[index]['plan'])+' / bulan',
+                                              style: TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 11.0,
+                                              ),
                                             ),
-                                          ),
-                                        ],
-                                      ),
-                                    )
-                                  ],
-                                ),
-                              ),
-                              Container(
-                                width: 100,
-                                alignment: Alignment.centerRight,
-                                child: Text(
-                                  'Rp. '+data[index]['current_save'].toString()+' / Rp. '+data[index]['target_total'].toString(),
-                                  style: TextStyle(
-                                      color: Colors.orange,
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.w600
+                                          ],
+                                        ),
+                                      )
+                                    ],
                                   ),
                                 ),
-                              ),
-                            ],
+                                Container(
+                                  width: 100,
+                                  alignment: Alignment.centerRight,
+                                  child: Text(
+                                    NumberFormat.simpleCurrency(locale: "id_ID",decimalDigits: 0 ).format(data[index]['current_save'])+' / '+NumberFormat.simpleCurrency(locale: "id_ID",decimalDigits: 0 ).format(data[index]['target_total']),
+                                    style: TextStyle(
+                                        color: Colors.orange,
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w600
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
                         ),
                       ),
