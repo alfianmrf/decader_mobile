@@ -22,6 +22,15 @@ class Network{
     );
   }
 
+  login(data, apiUrl) async {
+    var fullUrl = _url + apiUrl;
+    return await http.post(
+        fullUrl,
+        body: jsonEncode(data),
+        headers: _setHeaders()
+    );
+  }
+
   getData(apiUrl) async {
     var fullUrl = _url + apiUrl;
     await _getToken();

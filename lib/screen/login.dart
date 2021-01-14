@@ -230,7 +230,7 @@ class _LoginState extends State<Login> {
       'password' : password
     };
 
-    var res = await Network().authData(data, '/login');
+    var res = await Network().login(data, '/login');
     var body = json.decode(res.body);
     if(body['success']){
       SharedPreferences localStorage = await SharedPreferences.getInstance();

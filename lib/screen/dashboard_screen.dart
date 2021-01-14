@@ -108,13 +108,8 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
                                   width: 2,
                                 )
                             ),
-                            child : GestureDetector(
-                              onTap: (){
-                                logout();
-                              },
-                              child: Image(
-                                image: NetworkImage("https://images.unsplash.com/photo-1608833970687-99bc4f54898d?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80"),
-                              ),
+                            child : Image(
+                              image: NetworkImage("https://images.unsplash.com/photo-1608833970687-99bc4f54898d?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80"),
                             )
                         )
                       ]
@@ -423,18 +418,5 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
         ),
       ),
     );
-  }
-
-  void logout() async{
-    var res = await Network().getData('/logout');
-    var body = json.decode(res.body);
-    if(body['success']){
-      SharedPreferences localStorage = await SharedPreferences.getInstance();
-      localStorage.remove('user');
-      localStorage.remove('token');
-      Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context)=>Login()));
-    }
   }
 }
