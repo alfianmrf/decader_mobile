@@ -19,6 +19,12 @@ class _EditTabunganScreenState extends State<EditTabunganScreen> {
   final String _url = 'https://decader.000webhostapp.com';
   Color orange = const Color.fromRGBO(244, 144, 31, 1);
   Color field = const Color.fromRGBO(227, 238, 240, 1);
+  TextEditingController titleController = new TextEditingController();
+  TextEditingController planController = new TextEditingController();
+  TextEditingController targetTotalController = new TextEditingController();
+  TextEditingController descriptionController = new TextEditingController();
+  String title, description;
+  int plan, targetTotal;
   DateTime selectedDate = DateTime.now();
   bool updateDate = false;
 
@@ -125,6 +131,7 @@ class _EditTabunganScreenState extends State<EditTabunganScreen> {
                                           child: Padding(
                                             padding: const EdgeInsets.symmetric(horizontal: 15),
                                             child: TextFormField(
+                                              // controller: titleController,
                                               initialValue: widget.save['title'],
                                               style: TextStyle(
                                                 color: Color(0xFF000000),
@@ -149,6 +156,7 @@ class _EditTabunganScreenState extends State<EditTabunganScreen> {
                                                 if (namaTabunganValue.isEmpty) {
                                                   return 'Please enter some text';
                                                 }
+                                                title = namaTabunganValue;
                                                 return null;
                                               },
                                             ),
@@ -189,6 +197,7 @@ class _EditTabunganScreenState extends State<EditTabunganScreen> {
                                                   padding: const EdgeInsets.symmetric(horizontal: 15),
                                                   child: Flexible(
                                                     child: TextFormField(
+                                                      // controller: descriptionController,
                                                       initialValue: widget.save['description'],
                                                       style: TextStyle(
                                                         color: Color(0xFF000000),
@@ -216,6 +225,7 @@ class _EditTabunganScreenState extends State<EditTabunganScreen> {
                                                         if (desTabunganValue.isEmpty) {
                                                           return 'Please enter some text';
                                                         }
+                                                        description = desTabunganValue;
                                                         return null;
                                                       },
                                                     ),
@@ -302,6 +312,7 @@ class _EditTabunganScreenState extends State<EditTabunganScreen> {
 
                                                 Flexible(
                                                   child: TextFormField(
+                                                    // controller: targetTotalController,
                                                     initialValue: widget.save['target_total'].toString(),
                                                     style: TextStyle(
                                                       color: Color(0xFF000000),
@@ -326,6 +337,7 @@ class _EditTabunganScreenState extends State<EditTabunganScreen> {
                                                       if (targetTabunganValue.isEmpty) {
                                                         return 'Please enter some text';
                                                       }
+                                                      targetTotal = int.parse(targetTabunganValue);
                                                       return null;
                                                     },
                                                   ),
@@ -380,6 +392,7 @@ class _EditTabunganScreenState extends State<EditTabunganScreen> {
 
                                                 Flexible(
                                                   child: TextFormField(
+                                                    // controller: planController,
                                                     initialValue: widget.save['plan'].toString(),
                                                     style: TextStyle(
                                                       color: Color(0xFF000000),
@@ -404,6 +417,7 @@ class _EditTabunganScreenState extends State<EditTabunganScreen> {
                                                       if (rencanaTabunganValue.isEmpty) {
                                                         return 'Please enter some text';
                                                       }
+                                                      plan = int.parse(rencanaTabunganValue);
                                                       return null;
                                                     },
                                                   ),
@@ -559,6 +573,7 @@ class _EditTabunganScreenState extends State<EditTabunganScreen> {
                                           new BorderRadius.circular(20.0)),
                                       onPressed: () {
                                         if (_formKey.currentState.validate()) {
+                                          _edit();
                                         }
                                       },
                                     ),
@@ -621,6 +636,36 @@ class _EditTabunganScreenState extends State<EditTabunganScreen> {
         selectedDate = picked;
         updateDate = true;
       });
+  }
+
+  void _edit()async{
+    var data = {
+      'id' : widget.save['id'],
+      'title' : title,
+      'plan' : plan,
+      'target_date' : "${selectedDate.toLocal()}".split(' ')[0],
+      'target_total' : targetTotal,
+      'description': description,
+    };
+
+    var res = await Network().authData(data, '/update');
+    var body = json.decode(res.body);
+    if(body['success']==true){
+      Navigator.push(
+        context,
+        new MaterialPageRoute(
+            builder: (context) => Home()
+        ),
+      );
+    }
+    else if(body['success']==false){
+      print("GAGAL");
+      print(_imageFile.path.split("/").last);
+    }
+    else{
+      print("Error");
+      print(body);
+    }
   }
 
   void _delete()async{
