@@ -2,6 +2,10 @@
 
 A new Flutter application.
 
+For Testing
+Email : alfian@mail.com
+Password : 123456
+
 ## Getting Started
 
 This project is a starting point for a Flutter application.
