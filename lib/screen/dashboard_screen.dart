@@ -30,7 +30,6 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
   void initState(){
     _pindahTab = new TabController(length: 2, vsync: this);
     _loadUserData();
-    _loadSavesData();
     super.initState();
   }
 
@@ -62,14 +61,13 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
       Map<String, dynamic> map;
       map = json.decode(res.body);
 
-      setState(() {
-        data = map["data"];
-      });
+      data = map["data"];
       print(data);
       for(var i = 0; i < data.length; i++){
         totalTabungan += data[i]['current_save'];
       }
     }
+    return data;
   }
 
   @override
@@ -238,89 +236,101 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
               child: TabBarView(
                 controller: _pindahTab,
                 children: <Widget>[
-                  ListView.builder(
-                    itemCount: data.length,
-                    shrinkWrap: true,
-                    itemBuilder: (BuildContext context, int index) => Container(
-                      width: MediaQuery.of(context).size.width,
-                      padding: EdgeInsets.symmetric(horizontal: 20.0, vertical: 2.0),
-                      child: Card(
-                        elevation: 0.0,
-                        color: Color.fromRGBO(16, 76, 88, 1),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(0.0),
-                        ),
-                        child: InkWell(
-                          onTap: (){
-                            Navigator.push(
-                                context,
-                                new MaterialPageRoute(builder: (context) => ReadTabunganScreen(data[index])));
-                          },
-                          child: Container(
+                  FutureBuilder(
+                    future: _loadSavesData(),
+                    builder: (context, snapshot) {
+                      if (snapshot.hasData) {
+                        print(snapshot.data);
+                        return ListView.builder(
+                          itemCount: snapshot.data.length,
+                          shrinkWrap: true,
+                          itemBuilder: (BuildContext context, int index) => Container(
                             width: MediaQuery.of(context).size.width,
-                            padding: EdgeInsets.symmetric(horizontal: 10, vertical: 20),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: <Widget>[
-                                Expanded(
+                            padding: EdgeInsets.symmetric(horizontal: 20.0, vertical: 2.0),
+                            child: Card(
+                              elevation: 0.0,
+                              color: Color.fromRGBO(16, 76, 88, 1),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(0.0),
+                              ),
+                              child: InkWell(
+                                onTap: (){
+                                  Navigator.push(
+                                      context,
+                                      new MaterialPageRoute(builder: (context) => ReadTabunganScreen(data[index])));
+                                },
+                                child: Container(
+                                  width: MediaQuery.of(context).size.width,
+                                  padding: EdgeInsets.symmetric(horizontal: 10, vertical: 20),
                                   child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     children: <Widget>[
-                                      Container(
-                                        width: 35,
-                                        height: 35,
-                                        child: CircleAvatar(
-                                          backgroundColor: Colors.white,
-                                          foregroundColor: Colors.white,
-                                          backgroundImage: NetworkImage(_url+data[index]['image']),
-                                        ),
-                                      ),
-                                      SizedBox(width: 5.0),
                                       Expanded(
-                                        child: Column(
+                                        child: Row(
                                           crossAxisAlignment: CrossAxisAlignment.start,
                                           children: <Widget>[
-                                            Text(
-                                             data[index]['title'],
-                                              style: TextStyle(
-                                                  color: Colors.orange,
-                                                  fontSize: 15.0,
-                                                  fontWeight: FontWeight.w600
+                                            Container(
+                                              width: 35,
+                                              height: 35,
+                                              child: CircleAvatar(
+                                                backgroundColor: Colors.white,
+                                                foregroundColor: Colors.white,
+                                                backgroundImage: NetworkImage(_url+data[index]['image']),
                                               ),
                                             ),
-                                            SizedBox(height: 2),
-                                            Text(
-                                              NumberFormat.simpleCurrency(locale: "id_ID",decimalDigits: 0 ).format(data[index]['plan'])+' / bulan',
-                                              style: TextStyle(
-                                                color: Colors.white,
-                                                fontSize: 11.0,
+                                            SizedBox(width: 5.0),
+                                            Expanded(
+                                              child: Column(
+                                                crossAxisAlignment: CrossAxisAlignment.start,
+                                                children: <Widget>[
+                                                  Text(
+                                                    data[index]['title'],
+                                                    style: TextStyle(
+                                                        color: Colors.orange,
+                                                        fontSize: 15.0,
+                                                        fontWeight: FontWeight.w600
+                                                    ),
+                                                  ),
+                                                  SizedBox(height: 2),
+                                                  Text(
+                                                    NumberFormat.simpleCurrency(locale: "id_ID",decimalDigits: 0 ).format(data[index]['plan'])+' / bulan',
+                                                    style: TextStyle(
+                                                      color: Colors.white,
+                                                      fontSize: 11.0,
+                                                    ),
+                                                  ),
+                                                ],
                                               ),
-                                            ),
+                                            )
                                           ],
                                         ),
-                                      )
+                                      ),
+                                      Container(
+                                        width: 100,
+                                        alignment: Alignment.centerRight,
+                                        child: Text(
+                                          NumberFormat.simpleCurrency(locale: "id_ID",decimalDigits: 0 ).format(data[index]['current_save'])+' / '+NumberFormat.simpleCurrency(locale: "id_ID",decimalDigits: 0 ).format(data[index]['target_total']),
+                                          style: TextStyle(
+                                              color: Colors.orange,
+                                              fontSize: 14,
+                                              fontWeight: FontWeight.w600
+                                          ),
+                                        ),
+                                      ),
                                     ],
                                   ),
                                 ),
-                                Container(
-                                  width: 100,
-                                  alignment: Alignment.centerRight,
-                                  child: Text(
-                                    NumberFormat.simpleCurrency(locale: "id_ID",decimalDigits: 0 ).format(data[index]['current_save'])+' / '+NumberFormat.simpleCurrency(locale: "id_ID",decimalDigits: 0 ).format(data[index]['target_total']),
-                                    style: TextStyle(
-                                        color: Colors.orange,
-                                        fontSize: 14,
-                                        fontWeight: FontWeight.w600
-                                    ),
-                                  ),
-                                ),
-                              ],
+                              ),
                             ),
                           ),
-                        ),
-                      ),
-                    ),
+                        );
+                      } else {
+                        return Center (
+                            child: CircularProgressIndicator()
+                        );
+                      }
+                    },
                   ),
                   ListView.builder(
                     itemCount: 5,
