@@ -1,6 +1,10 @@
+import 'dart:convert';
 import 'dart:io';
+import 'package:decader/network_utils/api.dart';
+import 'package:decader/screen/home.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:http/http.dart' as http;
 
 class CreateTabunganScreen extends StatefulWidget{
   @override
@@ -12,6 +16,10 @@ class _CreateTabunganScreenState extends State<CreateTabunganScreen> {
   DateTime selectedDate = DateTime.now();
   Color orange = const Color.fromRGBO(244, 144, 31, 1);
   Color field = const Color.fromRGBO(227, 238, 240, 1);
+  TextEditingController titleController = new TextEditingController();
+  TextEditingController planController = new TextEditingController();
+  TextEditingController targetTotalController = new TextEditingController();
+  TextEditingController descriptionController = new TextEditingController();
 
   //image picker
   PickedFile _imageFile;
@@ -116,6 +124,7 @@ class _CreateTabunganScreenState extends State<CreateTabunganScreen> {
                                         child: Padding(
                                           padding: const EdgeInsets.symmetric(horizontal: 15),
                                           child: TextFormField(
+                                            controller: titleController,
                                             style: TextStyle(
                                               color: Color(0xFF000000),
                                               fontSize: 15,
@@ -179,6 +188,7 @@ class _CreateTabunganScreenState extends State<CreateTabunganScreen> {
                                                 padding: const EdgeInsets.symmetric(horizontal: 15),
                                                 child: Flexible(
                                                   child: TextFormField(
+                                                    controller: descriptionController,
                                                     style: TextStyle(
                                                       color: Color(0xFF000000),
                                                       fontSize: 15,
@@ -291,6 +301,7 @@ class _CreateTabunganScreenState extends State<CreateTabunganScreen> {
 
                                               Flexible(
                                                 child: TextFormField(
+                                                  controller: targetTotalController,
                                                   style: TextStyle(
                                                     color: Color(0xFF000000),
                                                     fontSize: 15,
@@ -368,6 +379,7 @@ class _CreateTabunganScreenState extends State<CreateTabunganScreen> {
 
                                               Flexible(
                                                 child: TextFormField(
+                                                  controller: planController,
                                                   style: TextStyle(
                                                     color: Color(0xFF000000),
                                                     fontSize: 15,
@@ -546,6 +558,7 @@ class _CreateTabunganScreenState extends State<CreateTabunganScreen> {
                                         new BorderRadius.circular(20.0)),
                                     onPressed: () {
                                       if (_formKey.currentState.validate()) {
+                                        _save();
                                       }
                                     },
                                   ),
@@ -610,6 +623,35 @@ class _CreateTabunganScreenState extends State<CreateTabunganScreen> {
     );
   }
 
+  void _save()async{
+    var data = {
+      'title' : titleController.text,
+      'plan' : int.parse(planController.text),
+      'target_date' : "${selectedDate.toLocal()}".split(' ')[0],
+      'target_total' : targetTotalController.text,
+      'current_save': 0,
+      'description': descriptionController.text
+    };
+
+    var res = await Network().authData(data, '/create');
+    var body = json.decode(res.body);
+    if(body['success']==true){
+      Navigator.push(
+        context,
+        new MaterialPageRoute(
+            builder: (context) => Home()
+        ),
+      );
+    }
+    else if(body['success']==false){
+      print("GAGAL");
+      print(_imageFile.path.split("/").last);
+    }
+    else{
+      print(body);
+    }
+  }
+
   _selectDate(BuildContext context) async {
     final DateTime picked = await showDatePicker(
       context: context,
@@ -625,7 +667,7 @@ class _CreateTabunganScreenState extends State<CreateTabunganScreen> {
 
   //method ambil foto
   void takePhoto(ImageSource source) async{
-    final pickedFile = await _picker.getImage(source: source);
+    var pickedFile = await _picker.getImage(source: source);
     setState(() {
       _imageFile = pickedFile;
     });
