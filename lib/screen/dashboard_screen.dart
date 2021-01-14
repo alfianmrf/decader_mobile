@@ -63,9 +63,6 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
 
       data = map["data"];
       print(data);
-      for(var i = 0; i < data.length; i++){
-        totalTabungan += data[i]['current_save'];
-      }
     }
     return data;
   }
@@ -135,13 +132,28 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
                         ),
                       ),
                       SizedBox(height: screenHeight * 0.005),
-                      Text(
-                        NumberFormat.simpleCurrency(locale: "id_ID",decimalDigits: 0 ).format(totalTabungan)??'Rp. 0',
-                        style: TextStyle(
-                          color: Color.fromRGBO(244, 144, 31, 1),
-                          fontSize: 28,
-                          fontWeight: FontWeight.w600,
-                        ),
+                      FutureBuilder(
+                        future: _loadSavesData(),
+                        builder: (context, snapshot) {
+                          if (snapshot.hasData) {
+                            for(var i = 0; i < snapshot.data.length; i++){
+                              totalTabungan += data[i]['current_save'];
+                            }
+                            print(snapshot.data);
+                            return Text(
+                              NumberFormat.simpleCurrency(locale: "id_ID",decimalDigits: 0 ).format(totalTabungan)??'Rp. 0',
+                              style: TextStyle(
+                                color: Color.fromRGBO(244, 144, 31, 1),
+                                fontSize: 28,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            );
+                          } else {
+                            return Center (
+                                child: CircularProgressIndicator()
+                            );
+                          }
+                        },
                       ),
                     ],
                   ),
