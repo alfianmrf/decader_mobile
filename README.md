@@ -6,6 +6,11 @@ For Testing
 Email : alfian@mail.com
 Password : 123456
 
+Nama Kelompok :
+M. Alfian Ma'ruf (18051204059)
+M. Aris Saputra (18051204041)
+Dimas Shafir A. (18051204062)
+
 ## Getting Started
 
 This project is a starting point for a Flutter application.
