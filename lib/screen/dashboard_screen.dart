@@ -17,7 +17,7 @@ class DashboardScreen extends StatefulWidget{
 
 class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProviderStateMixin{
   String name, cektoken;
-  int totalTabungan = 0;
+  int totalTabungan;
   List namaTabungan = ["Tabungan Anak Sekolah", "Tabungan Haji", "Tabungan Motor", "Tabungan Liburan", "Tabungan Umroh"];
   List tabunganTercapai = ["Tabungan Kuliah", "Tabungan Pergi", "Tabungan Mobil", "Tabungan Holiday", "Tabungan Umroh"];
   List durasiTabungan = ["Bulanan", "Mingguan", "Bulanan", "Bulanan", "Bulanan"];
@@ -133,6 +133,7 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
                         future: saveFuture,
                         builder: (context, snapshot) {
                           if (snapshot.hasData) {
+                            totalTabungan = 0;
                             for(var i = 0; i < snapshot.data.length; i++){
                               totalTabungan += data[i]['current_save'];
                             }
