@@ -671,7 +671,7 @@ class _CreateTabunganScreenState extends State<CreateTabunganScreen> {
     request.fields['target_date'] = "${selectedDate.toLocal()}".split(' ')[0];
     request.fields['target_total'] = targetTotalController.text;
     request.fields['current_save'] = '0';
-    request.fields['description'] = descriptionController.text;
+    request.fields['description'] = planController.text;
     request.headers.addAll(headers);
 
     if(_imageFile != null){

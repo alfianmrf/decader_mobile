@@ -3,7 +3,9 @@ import 'dart:io';
 import 'package:decader/network_utils/api.dart';
 import 'package:decader/screen/home.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class EditTabunganScreen extends StatefulWidget{
   Map save;
@@ -17,6 +19,7 @@ class EditTabunganScreen extends StatefulWidget{
 class _EditTabunganScreenState extends State<EditTabunganScreen> {
   final _formKey = GlobalKey<FormState>();
   final String _url = 'https://decader.000webhostapp.com';
+  final String _urlAPI = 'https://decader.000webhostapp.com/api/v1';
   Color orange = const Color.fromRGBO(244, 144, 31, 1);
   Color field = const Color.fromRGBO(227, 238, 240, 1);
   TextEditingController titleController = new TextEditingController();
@@ -573,7 +576,7 @@ class _EditTabunganScreenState extends State<EditTabunganScreen> {
                                           new BorderRadius.circular(20.0)),
                                       onPressed: () {
                                         if (_formKey.currentState.validate()) {
-                                          _edit();
+                                          _editImage();
                                         }
                                       },
                                     ),
@@ -665,6 +668,51 @@ class _EditTabunganScreenState extends State<EditTabunganScreen> {
     else{
       print("Error");
       print(body);
+    }
+  }
+
+  _editImage() async{
+    final request = http.MultipartRequest('POST', Uri.parse(_urlAPI+'/update'));
+
+    SharedPreferences localStorage = await SharedPreferences.getInstance();
+    var token = jsonDecode(localStorage.getString('token'))['token'];
+    Map<String, String> headers = {
+      'Content-type' : 'application/json',
+      'Accept' : 'application/json',
+      "Authorization": "Bearer $token"
+    };
+
+    request.fields['id'] = widget.save['id'].toString();
+    request.fields['title'] = title;
+    request.fields['plan'] = plan.toString();
+    request.fields['target_date'] = "${selectedDate.toLocal()}".split(' ')[0];
+    request.fields['target_total'] = targetTotal.toString();
+    request.fields['description'] = description;
+    request.headers.addAll(headers);
+
+    if(_imageFile != null){
+      final imgSave = await http.MultipartFile.fromPath('image', _imageFile.path);
+      request.files.add(imgSave);
+    }
+
+    final streamedResponse = await request.send();
+
+    try{
+      final response = await http.Response.fromStream(streamedResponse);
+      if(response.statusCode == 200){
+        Navigator.push(
+          context,
+          new MaterialPageRoute(
+              builder: (context) => Home()
+          ),
+        );
+      }
+      else{
+        throw Exception('Failed to add save');
+      }
+    }
+    catch(e){
+      print(e);
     }
   }
 
