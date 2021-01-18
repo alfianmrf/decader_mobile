@@ -24,6 +24,7 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
   List isiTabungan = ["200.000/\n10.000.000", "200.000/\n10.000.000", "200.000/\n10.000.000", "200.000/\n10.000.000", "200.000/\n10.000.000"];
   Color orange = const Color.fromRGBO(244, 144, 31, 1);
   final String _url = 'https://decader.000webhostapp.com';
+  Future saveFuture;
 
   TabController _pindahTab;
   @override
@@ -31,6 +32,7 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
     _pindahTab = new TabController(length: 2, vsync: this);
     _loadUserData();
     super.initState();
+    saveFuture = _loadSavesData();
   }
 
   @override
@@ -128,7 +130,7 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
                       ),
                       SizedBox(height: screenHeight * 0.005),
                       FutureBuilder(
-                        future: _loadSavesData(),
+                        future: saveFuture,
                         builder: (context, snapshot) {
                           if (snapshot.hasData) {
                             for(var i = 0; i < snapshot.data.length; i++){
@@ -244,7 +246,7 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
                 controller: _pindahTab,
                 children: <Widget>[
                   FutureBuilder(
-                    future: _loadSavesData(),
+                    future: saveFuture,
                     builder: (context, snapshot) {
                       if (snapshot.hasData) {
                         print(snapshot.data);

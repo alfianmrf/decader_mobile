@@ -5,6 +5,7 @@ import 'package:decader/screen/home.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
 class CreateTabunganScreen extends StatefulWidget{
   @override
@@ -20,6 +21,7 @@ class _CreateTabunganScreenState extends State<CreateTabunganScreen> {
   TextEditingController planController = new TextEditingController();
   TextEditingController targetTotalController = new TextEditingController();
   TextEditingController descriptionController = new TextEditingController();
+  final String _url = 'https://decader.000webhostapp.com/api/v1';
 
   //image picker
   PickedFile _imageFile;
@@ -558,7 +560,7 @@ class _CreateTabunganScreenState extends State<CreateTabunganScreen> {
                                         new BorderRadius.circular(20.0)),
                                     onPressed: () {
                                       if (_formKey.currentState.validate()) {
-                                        _save();
+                                        _saveImage();
                                       }
                                     },
                                   ),
@@ -650,6 +652,51 @@ class _CreateTabunganScreenState extends State<CreateTabunganScreen> {
     else{
       print("Error");
       print(body);
+    }
+  }
+
+  _saveImage() async{
+    final request = http.MultipartRequest('POST', Uri.parse(_url+'/create'));
+
+    SharedPreferences localStorage = await SharedPreferences.getInstance();
+    var token = jsonDecode(localStorage.getString('token'))['token'];
+    Map<String, String> headers = {
+      'Content-type' : 'application/json',
+      'Accept' : 'application/json',
+      "Authorization": "Bearer $token"
+    };
+
+    request.fields['title'] = titleController.text;
+    request.fields['plan'] = planController.text;
+    request.fields['target_date'] = "${selectedDate.toLocal()}".split(' ')[0];
+    request.fields['target_total'] = targetTotalController.text;
+    request.fields['current_save'] = '0';
+    request.fields['description'] = descriptionController.text;
+    request.headers.addAll(headers);
+
+    if(_imageFile != null){
+      final imgSave = await http.MultipartFile.fromPath('image', _imageFile.path);
+      request.files.add(imgSave);
+    }
+
+    final streamedResponse = await request.send();
+
+    try{
+      final response = await http.Response.fromStream(streamedResponse);
+      if(response.statusCode == 200){
+        Navigator.push(
+          context,
+          new MaterialPageRoute(
+              builder: (context) => Home()
+          ),
+        );
+      }
+      else{
+        throw Exception('Failed to add save');
+      }
+    }
+    catch(e){
+      print(e);
     }
   }
 
